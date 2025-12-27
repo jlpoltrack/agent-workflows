@@ -1,6 +1,6 @@
 ---
 description: Clean up local branches merged into main
-version: 1.0.0
+version: 1.2.0
 ---
 
 // turbo-all
@@ -12,15 +12,30 @@ This workflow identifies and deletes local branches that have already been merge
 
 ## Steps
 
-1. List branches merged into main (excluding main itself)
+1. List and delete merged branches
 ```bash
-git branch --merged main | grep -v "^\*" | grep -v "main"
-```
+# Prefer 'JLP' or 'origin' if they exist, otherwise use first remote
+if git remote | grep -q "^JLP$"; then
+  REMOTE="JLP"
+elif git remote | grep -q "^origin$"; then
+  REMOTE="origin"
+else
+  REMOTE=$(git remote | head -n 1)
+fi
 
-2. Delete merged branches
-```bash
-# Example: git branch -d branch-name
-# Agent will confirm before deletion
+echo "Branches merged into $REMOTE/main:"
+MERGED=$(git branch --merged $REMOTE/main | grep -v "^\*" | grep -v "main")
+
+if [ -z "$MERGED" ]; then
+  echo "No merged branches to clean up"
+else
+  echo "$MERGED"
+  echo ""
+  echo "Deleting merged branches..."
+  echo "$MERGED" | xargs git branch -d
+  echo ""
+  echo Outcome: Cleaned up merged branches
+fi
 ```
 
 ## Usage

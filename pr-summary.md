@@ -1,6 +1,6 @@
 ---
 description: Generate a summary of changes against origin/main
-version: 1.0.0
+version: 1.2.0
 ---
 
 // turbo-all
@@ -8,28 +8,29 @@ version: 1.0.0
 # PR Summary Workflow
 **Last Updated: 2025-12-27**
 
-This workflow analyzes the differences between your current branch and `origin/main` to help generate a PR description.
+This workflow analyzes the differences between your current branch and the upstream `main` branch to help generate a PR description.
 
 ## Steps
 
-1. Echo current context
+1. Show changes summary
 ```bash
-echo "Branch: $(git branch --show-current)"
-```
+BRANCH=$(git branch --show-current)
+REMOTE_COUNT=$(git remote | wc -l | tr -d ' ')
 
-2. Show file breakdown (insertions/deletions)
-```bash
-git diff --stat origin/main..$(git branch --show-current)
-```
+if [ "$REMOTE_COUNT" -eq 1 ]; then
+  REMOTE=$(git remote)
+else
+  REMOTE=$(git remote | grep -i '^jlp$' | head -1)
+fi
 
-3. Show high-level diff of changes
-```bash
-git diff origin/main..$(git branch --show-current)
-```
-
-4. Summarize
-```bash
-# Agent will now analyze the diff above and provide a concise summary.
+echo Branch: $BRANCH
+echo Target: $REMOTE/main
+echo ""
+echo "File Statistics:"
+git diff --stat $REMOTE/main..$BRANCH
+echo ""
+echo "Detailed Changes:"
+git diff $REMOTE/main..$BRANCH
 ```
 
 ## Usage

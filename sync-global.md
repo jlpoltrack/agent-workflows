@@ -1,30 +1,35 @@
 ---
-description: Sync all local workflows to the global directory
-version: 1.0.0
+description: Sync workflows and agent rules to global ~/.gemini directory
+version: 2.0.0
 ---
 
 // turbo-all
 
 # Global Sync Workflow
-**Last Updated: 2025-12-27**
+**Last Updated: 2025-12-28**
 
-This workflow copies all `.md` workflow files from the current repository into the global `global_workflows` directory located in your home folder's `.gemini` path.
+Syncs all `.md` workflow files and the `GEMINI.md` agent rules file from this repository to the global `~/.gemini` directory structure.
 
 ## Steps
 
-1. Create the destination directory if it doesn't already exist
+1. Create the workflows destination directory if needed
 ```bash
 mkdir -p ~/.gemini/antigravity/global_workflows
 ```
 
-2. Copy all Markdown workflow files to the global directory
+2. Copy all workflow files to the global directory
 ```bash
-cp ./*.md ~/.gemini/antigravity/global_workflows/
+ls *.md | grep -vE "README.md|GEMINI.md" | xargs -I {} cp {} ~/.gemini/antigravity/global_workflows/
 ```
 
-3. Display the destination content for confirmation
+3. Copy GEMINI.md agent rules to ~/.gemini (overwrites existing)
 ```bash
-ls -F ~/.gemini/antigravity/global_workflows/
+cp ./GEMINI.md ~/.gemini/GEMINI.md
+```
+
+4. Confirm synced files
+```bash
+echo "=== Workflows ===" && ls ~/.gemini/antigravity/global_workflows/*.md && echo "" && echo "=== Agent Rules ===" && cat ~/.gemini/GEMINI.md
 ```
 
 ## Usage

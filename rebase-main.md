@@ -1,6 +1,6 @@
 ---
 description: Rebase current branch on origin/main
-version: 1.0.0
+version: 1.2.0
 ---
 
 // turbo-all
@@ -12,20 +12,26 @@ This workflow keeps your feature branch up-to-date with the project's main branc
 
 ## Steps
 
-1. Echo current context
+1. Fetch and rebase on origin/main
 ```bash
-echo "Branch: $(git branch --show-current)"
-echo "Target: origin/main"
-```
+BRANCH=$(git branch --show-current)
+REMOTE_COUNT=$(git remote | wc -l | tr -d ' ')
 
-2. Fetch latest main
-```bash
-git fetch origin main
-```
+if [ "$REMOTE_COUNT" -eq 1 ]; then
+  REMOTE=$(git remote)
+else
+  REMOTE=$(git remote | grep -i '^jlp$' | head -1)
+fi
 
-3. Rebase onto origin/main
-```bash
-git rebase origin/main
+echo Branch: $BRANCH
+echo Target: $REMOTE/main
+echo ""
+
+git fetch $REMOTE main
+git rebase $REMOTE/main
+
+echo ""
+echo Outcome: Rebased \| Branch: $BRANCH \| Base: $REMOTE/main
 ```
 
 ## Usage
