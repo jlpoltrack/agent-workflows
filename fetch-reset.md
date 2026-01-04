@@ -1,6 +1,6 @@
 ---
 description: Fetch latest changes and reset local branch to remote
-version: 1.1.0
+version: 1.2.0
 ---
 
 // turbo-all
@@ -12,24 +12,21 @@ This workflow fetches the latest updates from the remote repository and resets t
 
 ## Steps
 
-1. Get and display the current branch name
+1. Execute Fetch and Reset
 ```bash
-echo "Branch: $(git branch --show-current)"
-```
+BRANCH=$(git branch --show-current)
+REMOTE_COUNT=$(git remote | wc -l | tr -d ' ')
 
-2. Get and display the upstream remote
-```bash
-echo "Remote: $(git config --get branch.$(git branch --show-current).remote || echo "origin")"
-```
+if [ "$REMOTE_COUNT" -eq 1 ]; then
+  REMOTE=$(git remote)
+else
+  REMOTE=$(git remote | grep -i '^jlp$' | head -1)
+fi
 
-3. Fetch from the upstream remote
-```bash
-git fetch $(git config --get branch.$(git branch --show-current).remote || echo "origin")
-```
+git fetch $REMOTE
+git reset --hard $REMOTE/$BRANCH
 
-4. Reset the current branch to match the remote tracking branch
-```bash
-git reset --hard $(git config --get branch.$(git branch --show-current).remote || echo "origin")/$(git branch --show-current)
+echo Outcome: Fetched and Reset \| Branch: $BRANCH \| Remote: $REMOTE
 ```
 
 ## Usage

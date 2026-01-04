@@ -1,6 +1,6 @@
 ---
 description: Squash all commits on the branch into one and force-push
-version: 1.0.0
+version: 1.2.0
 ---
 
 // turbo-all
@@ -12,39 +12,31 @@ This workflow squashes all commits on the current branch (relative to the upstre
 
 ## Steps
 
-1. Get and display the current branch name
+1. Execute Squash and Push (requires commit message input)
 ```bash
-echo "Branch: $(git branch --show-current)"
-```
+BRANCH=$(git branch --show-current)
+REMOTE_COUNT=$(git remote | wc -l | tr -d ' ')
 
-2. Get and display the upstream remote
-```bash
-echo "Remote: $(git config --get branch.$(git branch --show-current).remote || echo "origin")"
-```
+if [ "$REMOTE_COUNT" -eq 1 ]; then
+  REMOTE=$(git remote)
+else
+  REMOTE=$(git remote | grep -i '^jlp$' | head -1)
+fi
 
-3. Prompt the user for a single-line commit message
-```bash
-# The agent will prompt for this message using notify_user or a direct question
-```
+MERGE_BASE=$(git merge-base $REMOTE/main $BRANCH)
 
-4. Determine the merge base with your remote main branch (defaulting to origin/main)
-```bash
-git merge-base $(git config --get branch.$(git branch --show-current).remote || echo "origin")/main $(git branch --show-current)
-```
+echo Current Branch: $BRANCH
+echo Remote: $REMOTE
+echo ""
+echo "Enter commit message for squashed commit:"
+read -r COMMIT_MSG
 
-5. Soft reset to the merge base (leaves files staged)
-```bash
-git reset --soft $(git merge-base $(git config --get branch.$(git branch --show-current).remote || echo "origin")/main $(git branch --show-current))
-```
+git reset --soft $MERGE_BASE
+git commit -m "$COMMIT_MSG"
+git push --force-with-lease $REMOTE $BRANCH --quiet
 
-6. Commit with the provided message
-```bash
-# Example: git commit -m "Your approved message here"
-```
-
-7. Force-push with lease to the upstream remote
-```bash
-git push --force-with-lease $(git config --get branch.$(git branch --show-current).remote || echo "origin") $(git branch --show-current)
+echo ""
+echo Outcome: Squashed and Pushed \| Branch: $BRANCH \| Remote: $REMOTE
 ```
 
 ## Usage

@@ -1,40 +1,37 @@
 ---
 description: Stage, amend, and force-push changes to the remote
-version: 1.1.1
+version: 1.3.0
 ---
 
 // turbo-all
 
 # Amend and Force-Push Workflow
-**Last Updated: 2025-12-27**
+**Last Updated: 2026-01-09**
 
-This workflow stages all modified files, amends them to the last commit, and force-pushes the current branch to its upstream remote repository.
+This workflow stages all modified files, amends them to the last commit, and force-pushes the current branch to its upstream remote repository. Optimized for PowerShell/Windows.
 
 ## Steps
 
-1. Get and display the current branch name
-```bash
-echo "Branch: $(git branch --show-current)"
-```
+1. Execute Amend and Force-Push
+```powershell
+$branch = git branch --show-current
+$remotes = git remote
+$remoteCount = $remotes.Count
 
-2. Get and display the upstream remote
-```bash
-echo "Remote: $(git config --get branch.$(git branch --show-current).remote || echo "origin")"
-```
+if ($remoteCount -eq 1) {
+    $remote = $remotes
+} else {
+    $remote = $remotes | Select-String -Pattern "^jlp$" -CaseInsensitive | Select-Object -First 1
+    if (!$remote) {
+        $remote = $remotes[0]
+    }
+}
 
-3. Stage all modified files
-```bash
 git add -A
-```
+git commit --amend --no-edit --quiet
+git push --force-with-lease $remote $branch --quiet
 
-4. Amend to the last commit without editing the message
-```bash
-git commit --amend --no-edit
-```
-
-5. Force-push to the upstream remote (using branch and remote from steps 1 and 2)
-```bash
-git push --force-with-lease $(git config --get branch.$(git branch --show-current).remote || echo "origin") $(git branch --show-current)
+Write-Host "Outcome: Amended and Pushed | Branch: $branch | Remote: $remote"
 ```
 
 ## Usage

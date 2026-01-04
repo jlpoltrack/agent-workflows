@@ -1,30 +1,35 @@
 ---
-description: Sync all local workflows to the global directory
-version: 1.0.0
+description: Sync workflows and agent rules to global ~/.gemini directory
+version: 2.1.0
 ---
 
 // turbo-all
 
 # Global Sync Workflow
-**Last Updated: 2025-12-27**
+**Last Updated: 2026-01-09**
 
-This workflow copies all `.md` workflow files from the current repository into the global `global_workflows` directory located in your home folder's `.gemini` path.
+Syncs all `.md` workflow files and the `GEMINI.md` agent rules file from this repository to the global `.gemini` directory structure. Optimized for PowerShell/Windows.
 
 ## Steps
 
-1. Create the destination directory if it doesn't already exist
-```bash
-mkdir -p ~/.gemini/antigravity/global_workflows
+1. Create the workflows destination directory if needed
+```powershell
+if (!(Test-Path "$HOME\.gemini\antigravity\global_workflows")) { New-Item -ItemType Directory -Path "$HOME\.gemini\antigravity\global_workflows" -Force }
 ```
 
-2. Copy all Markdown workflow files to the global directory
-```bash
-cp ./*.md ~/.gemini/antigravity/global_workflows/
+2. Copy all workflow files to the global directory
+```powershell
+Get-ChildItem -Path *.md -Exclude "README.md", "GEMINI.md" | Copy-Item -Destination "$HOME\.gemini\antigravity\global_workflows\" -Force
 ```
 
-3. Display the destination content for confirmation
-```bash
-ls -F ~/.gemini/antigravity/global_workflows/
+3. Copy GEMINI.md agent rules to ~/.gemini (overwrites existing)
+```powershell
+Copy-Item -Path ".\GEMINI.md" -Destination "$HOME\.gemini\GEMINI.md" -Force
+```
+
+4. Confirm synced files
+```powershell
+Write-Host "=== Workflows ==="; Get-ChildItem "$HOME\.gemini\antigravity\global_workflows\*.md" | Select-Object Name; Write-Host "`n=== Agent Rules ==="; Get-Content "$HOME\.gemini\GEMINI.md"
 ```
 
 ## Usage
