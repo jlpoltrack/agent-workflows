@@ -1,6 +1,6 @@
 ---
 description: Guidance on using the Gemini CLI for automated tasks and code reviews
-version: 1.0.0
+version: 1.1.0
 ---
 
 # Gemini CLI Helper Workflow
@@ -19,6 +19,10 @@ Delegating tasks to the `gemini-cli` is most effective when:
 - **Low Effort**: simple code reviews (`git diff | gemini "review this"`).
 - **Medium Effort**: targeted refactoring with file write access (`cat file | gemini --approval-mode auto_edit "refactor this"`).
 - **High Effort**: complex multi-file logic. for these, it is often better to use the main agent directly unless modularity is required.
+
+## Context & Quota Management
+
+Using the CLI offloads 'token-heavy' tasks (like reading large logs or diffs), which keeps the main agent's context window lean, improves response speed, and prevents 'forgetting'. It also effectively uses a separate output/usage stream.
 
 ## Technical Learnings
 
