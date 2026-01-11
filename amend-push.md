@@ -1,18 +1,40 @@
 ---
 description: Stage, amend, and force-push changes to the remote
-version: 1.3.0
+version: 1.4.0
 ---
 
 // turbo-all
 
 # Amend and Force-Push Workflow
-**Last Updated: 2026-01-09**
+**Last Updated: 2026-01-11**
 
-This workflow stages all modified files, amends them to the last commit, and force-pushes the current branch to its upstream remote repository. Optimized for PowerShell/Windows.
+This workflow stages all modified files, amends them to the last commit, and force-pushes the current branch to its upstream remote repository. Supports Bash (macOS/Linux) and PowerShell (Windows).
 
 ## Steps
 
-1. Execute Amend and Force-Push
+### Bash (macOS/Linux)
+```bash
+branch=$(git branch --show-current)
+remotes=$(git remote)
+remote_count=$(echo "$remotes" | grep -c '^')
+
+if [ "$remote_count" -eq 1 ]; then
+    remote=$(echo "$remotes" | head -n 1)
+else
+    remote=$(echo "$remotes" | grep -i "^jlp$" | head -n 1)
+    if [ -z "$remote" ]; then
+        remote=$(echo "$remotes" | head -n 1)
+    fi
+fi
+
+git add -A
+git commit --amend --no-edit --quiet
+git push --force-with-lease "$remote" "$branch" --quiet
+
+echo "Outcome: Amended and Pushed | Branch: $branch | Remote: $remote"
+```
+
+### PowerShell (Windows)
 ```powershell
 $branch = git branch --show-current
 $remotes = git remote
