@@ -14,6 +14,7 @@ A collection of optimized Git workflows designed for agent-driven development. T
 - `/new-feature`: Fetches the latest code from `origin/main` and creates a fresh feature branch.
 - `/pr-summary`: Generates a concise summary of all changes in your branch compared to `origin/main`.
 - `/rebase-main`: Rebases your current feature branch onto the latest `origin/main`.
+- `/review-uncommitted`: Review all uncommitted changes (staged and unstaged) for bugs, style, and logic.
 - `/squash-push`: Squashes all commits on your branch into one and force-pushes with a custom message.
 - `/style-audit`: Audit files for adherence to GEMINI.md rules and project style.
 - `/sync-global`: Copies all workflows from this repository to your global `~/.gemini/antigravity/global_workflows/` directory.
@@ -28,4 +29,4 @@ To make these workflows available across all your projects, use the `/sync-globa
 
 Simply invoke the command by name in your chat (e.g., "/amend-push") or describe the action you want to take. The agent will read the corresponding `.md` file and execute the steps.
 
-_Last updated: 2026-01-11_
+_Last updated: 2026-01-13_
